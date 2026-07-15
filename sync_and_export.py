@@ -71,12 +71,20 @@ def sync_from_ankiweb(col: Collection, username: str, password: str) -> None:
     auth = col.sync_login(username, password, endpoint=None)
     out = col.sync_collection(auth, sync_media=False)
 
+    if out.new_endpoint:
+        # AnkiWeb's server farm redirects fresh clients to another host;
+        # everything after this point must talk to that host, or the full
+        # download fails with HTTP 400 "missing original size".
+        auth.endpoint = out.new_endpoint
+
     if out.required in (out.FULL_DOWNLOAD, out.FULL_SYNC):
         # First run in a fresh environment: pull the whole collection.
         # (upload=False means the server copy always wins here, which is
         # what we want -- this copy is disposable.)
         print("Full download required, fetching collection from AnkiWeb...")
+        col.close_for_full_sync()
         col.full_upload_or_download(auth=auth, server_usn=None, upload=False)
+        col.reopen(after_full_sync=True)
     elif out.required == out.FULL_UPLOAD:
         sys.exit(
             "AnkiWeb is asking for a full upload, which this job never does. "
