@@ -1,0 +1,9 @@
+[[今日は日曜日です。 || Kyō wa nichiyōbi desu. || Today is Sunday.]] [[朝、私は犬と公園に行きました。 || Asa, watashi wa inu to kōen ni ikimashita. || In the morning, I went to the park with my dog.]]
+
+[[公園で友達に会いました。 || Kōen de tomodachi ni aimashita. || I met a friend at the park.]] [[「おはよう！いい天気だね。」 || Ohayō! Ii tenki da ne. || "Morning! Nice weather, right?"]] [[「うん、本当に！」 || Un, hontō ni! || "Yeah, really!"]]
+
+[[私たちはたくさん話しました。 || Watashitachi wa takusan hanashimashita. || We talked a lot.]] [[犬は水を飲みました。 || Inu wa mizu o nomimashita. || The dog drank water.]]
+
+[[昼に家に帰りました。 || Hiru ni ie ni kaerimashita. || I went home at noon.]] [[母とご飯を食べました。 || Haha to gohan o tabemashita. || I ate a meal with my mother.]] [[楽しい一日でした。 || Tanoshii ichinichi deshita. || It was a fun day.]]
+
+NEW_WORDS: none
