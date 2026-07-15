@@ -1,0 +1,46 @@
+name: Update known words
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch: {}      # lets you trigger it from the GitHub app/site
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Cache the synced collection so only the first run is a full
+      # download; later runs are quick incremental syncs.
+      - uses: actions/cache@v4
+        with:
+          path: collection
+          key: anki-collection-${{ github.run_id }}
+          restore-keys: |
+            anki-collection-
+
+      - run: pip install anki==26.5
+
+      - name: Sync from AnkiWeb and export
+        run: python sync_and_export.py
+        env:
+          ANKIWEB_USERNAME: ${{ secrets.ANKIWEB_USERNAME }}
+          ANKIWEB_PASSWORD: ${{ secrets.ANKIWEB_PASSWORD }}
+          DECK: "Japanese::Kaishi*"   # Kaishi 1.5k + Kaishi +
+          FIELD: "Word"
+
+      - name: Commit the list if it changed
+        run: |
+          git config user.name "vocab-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add known_words.txt
+          git diff --cached --quiet || git commit -m "Update known words"
+          git push
