@@ -35,7 +35,9 @@ def clean(raw: str) -> str:
     return text.replace("\u00a0", " ").strip()
 
 
-def export_words(col: Collection, deck: str, field: str, output: Path) -> int:
+def export_words(
+    col: Collection, deck: str, field: str, output: Path
+) -> list[str]:
     words: list[str] = []
     seen: set[str] = set()
     missing_field = 0
@@ -64,7 +66,29 @@ def export_words(col: Collection, deck: str, field: str, output: Path) -> int:
             f'Warning: {missing_field} notes have no "{field}" field; '
             "their first field was used instead."
         )
-    return len(words)
+    return words
+
+
+def prune_introduced(known: set[str], path: Path) -> None:
+    """Drop story-introduced words that have since graduated in Anki.
+
+    introduced_words.txt is appended to by the story-writing assistant;
+    once a word shows up in the real known-words export it no longer
+    needs separate tracking.
+    """
+    if not path.exists():
+        return
+    lines = [ln.strip() for ln in path.read_text(encoding="utf-8").splitlines()]
+    current = [ln for ln in lines if ln]
+    kept = [w for w in dict.fromkeys(current) if w not in known]
+    if kept != current:
+        path.write_text(
+            "\n".join(kept) + ("\n" if kept else ""), encoding="utf-8"
+        )
+        print(
+            f"Pruned introduced list: {len(current) - len(kept)} graduated, "
+            f"{len(kept)} still pending."
+        )
 
 
 def sync_from_ankiweb(col: Collection, username: str, password: str) -> None:
@@ -105,10 +129,15 @@ def main() -> None:
     )
     col_path.parent.mkdir(parents=True, exist_ok=True)
 
+    introduced = Path(
+        os.environ.get("INTRODUCED", "introduced_words.txt")
+    )
+
     col = Collection(str(col_path))
     try:
         sync_from_ankiweb(col, username, password)
-        export_words(col, deck, field, output)
+        words = export_words(col, deck, field, output)
+        prune_introduced(set(words), introduced)
     finally:
         col.close()
 

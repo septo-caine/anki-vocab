@@ -52,6 +52,14 @@ the 6-hour schedule; for an instant refresh, open the GitHub app (or site),
 Actions tab → Run workflow. Then open your Claude/ChatGPT project and ask
 for a story.
 
+## introduced_words.txt
+
+A second list holding words that AI-generated stories introduced but that
+haven't graduated in Anki yet. The story assistant appends to it (via the
+GitHub connector); each sync run automatically removes any word that has
+since appeared in `known_words.txt`. Never write to `known_words.txt`
+directly — it is overwritten from Anki on every run.
+
 ## Notes
 
 - **Sync safety:** the job only ever *downloads* from AnkiWeb

@@ -41,11 +41,14 @@ jobs:
         run: |
           git config user.name "vocab-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add known_words.txt
+          git pull --rebase --autostash
+          git add known_words.txt introduced_words.txt
           git diff --cached --quiet || git commit -m "Update known words"
           git push
 
-      # jsDelivr mirrors the file on a domain LLM fetchers accept, but
+      # jsDelivr mirrors the files on a domain LLM fetchers accept, but
       # caches for 12h -- purge it so updates show up right away.
       - name: Refresh jsDelivr cache
-        run: curl -s "https://purge.jsdelivr.net/gh/septo-caine/anki-vocab@main/known_words.txt" > /dev/null
+        run: |
+          curl -s "https://purge.jsdelivr.net/gh/septo-caine/anki-vocab@main/known_words.txt" > /dev/null
+          curl -s "https://purge.jsdelivr.net/gh/septo-caine/anki-vocab@main/introduced_words.txt" > /dev/null
